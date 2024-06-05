@@ -169,8 +169,8 @@ ul#nav li a {
    line-height: 32px;
 	text-decoration: none;
    text-align: left;
-   color: #F06000;
-   
+   color: #fff;
+
 	-webkit-transition: color .2s ease-in-out;
 	-moz-transition: color .2s ease-in-out;
 	-o-transition: color .2s ease-in-out;
@@ -187,7 +187,7 @@ ul#nav li.current a { color: #F06000; }
 /* ------------------------------------------------------------------ */
 
 #about {
-   background: #292828;
+   background: #2B2B2B;
    padding-top: 96px;
    padding-bottom: 66px;
    overflow: hidden;
@@ -236,7 +236,7 @@ ul#nav li.current a { color: #F06000; }
 /* ------------------------------------------------------------------ */
 
 #resume {
-   background: #f6e5e5;
+   background: #fff;
    padding-top: 90px;
    padding-bottom: 72px;
    overflow: hidden;
