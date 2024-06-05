@@ -13,9 +13,14 @@ let resumeData = {
           "name":"github",
           "url":"https://github.com/Jack-Jackk",
           "className":"fa fa-github"
+        },
+        {
+          "name":"money",
+          "url":"https://account.venmo.com/u/jackson-abeyta",
+          "className":"fa fa-money"
         }
       ],
-    "aboutme":"I'm a Jack (literally) of all trades with a combined 5+ years of experience in everything from auto-body work, wildlife removal, towing and trailering boats, customer service, food and bev, and more. Last year I turned to software development as a new challenge in my life and have gained a lot of experience on my own. I'm a quick learner and a hard worker, and I'm always looking for new opportunities to learn and grow. I'm currently looking for a full-time position as a full-stack developer, but I'm also open to internships and contract work.",
+    "aboutme":"I'm a Jack (literally) of all trades with a combined 5+ years of experience in everything from auto-body work, wildlife removal, towing and trailering boats, customer service, food and bev, and more.  Last year I turned to software development as a new challenge in my life and have gained a lot of experience on my own. I'm a quick learner and a hard worker, and I'm always looking for new opportunities to learn and grow. I'm currently looking for a full-time position as a full-stack developer, but I'm also open to internships and contract work.",
     "address":"Charleston, SC, USA",
     "website":"jackson@allwatermarinegroup.com",
     "education":[
