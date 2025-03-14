@@ -45,7 +45,7 @@ let resumeData = {
         "specialization":"Full Stack Developer",
         "MonthOfLeaving":"Mar 2024 ",
         "YearOfLeaving":"",
-        "Achievements":"Development using .NET Maui, C#, and Azure"
+        "Achievements":"Cross-platform development using .NET Maui, C#, and Azure"
       }
     ],
     "skillsDescription":"Current Skill Level",
