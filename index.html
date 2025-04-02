@@ -1040,9 +1040,10 @@
             // Particle material with initial zero opacity
             const material2 = new THREE.PointsMaterial({
                 size: 0.02,
+                sizeAttenuation: true, 
                 color: new THREE.Color().setHSL(0.6, 0.8, 0.7),
                 transparent: true,
-                opacity: 0 // Start transparent
+                opacity: 0
             });
 
             // Animate opacity over time
@@ -1121,13 +1122,31 @@
 
         // Initialize
         function optimizeParticles() {
-            renderer.setPixelRatio(window.devicePixelRatio > 1 ? 1 : 0.75);
-            particles.material.size = window.innerWidth < 768 ? 1 : 2;
+            const aspectRatio = window.innerWidth / window.innerHeight;
+            const baseSize = 0.02 * Math.min(window.devicePixelRatio, 2);
+            
+            // Maintain relative size across devices
+            particles.material.size = baseSize * Math.min(1, 1.5 / aspectRatio);
+            
+            // Update camera projection
+            camera.aspect = aspectRatio;
+            camera.updateProjectionMatrix();
+            
+            // Update renderer
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         }
 
         window.addEventListener('resize', () => {
             optimizeParticles();
-        camera.aspect = window.innerWidth / window.innerHeight;});
+            
+            // Reset particle positions
+            particles.position.z = 5;
+            particles.position.y = 0;
+            
+            // Force redraw
+            renderer.render(scene, camera);
+        });
 
         window.addEventListener('load', () => {
             initThreeScene();
