@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jackson Abeyta - Full Stack Developer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         /* Base Styles */
         :root {
@@ -908,11 +907,6 @@
         // Form Handling
         document.querySelector('.contact-form').addEventListener('submit', e => {
             e.preventDefault();
-            confetti({
-                particleCount: 150,
-                spread: 100,
-                origin: { y: 0.6 }
-            });
             e.target.reset();
         });
 
@@ -943,9 +937,84 @@
         // Initialize remaining components
         window.addEventListener('load', () => {
             createGeometryTransition();
-            // Add smooth scroll
-            // Add mobile menu functionality
-            // Add final polish
+            window.addEventListener('load', () => {
+    // 1. Smooth Scroll Implementation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(anchor.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // 2. Mobile Menu Functionality
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
+    
+    // Toggle menu
+    hamburger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navLinks.classList.toggle('nav-active');
+        hamburger.classList.toggle('toggle');
+        
+        // Animate menu items
+        gsap.from('.nav-links li', {
+            x: 20,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 0.3,
+            ease: 'power2.out'
+        });
+    });
+
+    // Close menu on outside click
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-menu')) {
+            navLinks.classList.remove('nav-active');
+            hamburger.classList.remove('toggle');
+        }
+    });
+
+    // 3. Final Polish
+    // Initialize scroll animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('reveal');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    // Observe elements
+    document.querySelectorAll('.timeline-card, .education-card').forEach(el => observer.observe(el));
+    
+    // Add hover effects to skill cards
+    document.querySelectorAll('.skill-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+
+    // Initialize particle system
+    createGeometryTransition();
+    
+    // Add keyboard accessibility
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navLinks.classList.contains('nav-active')) {
+            navLinks.classList.remove('nav-active');
+            hamburger.classList.remove('toggle');
+        }
+    });
+});
         });
 
         // Three.js Particle System
@@ -1049,14 +1118,6 @@
             renderer.render(scene, camera);
         }
 
-        window.addEventListener('click', () => {
-            confetti({
-                particleCount: 30,
-                angle: 90,
-                spread: 45,
-                origin: { x: mouse.x, y: Math.abs(mouse.y) }
-            });
-        });
 
         // Initialize
         function optimizeParticles() {
