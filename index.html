@@ -55,7 +55,7 @@
                 transparent, 
                 var(--dark-bg) 80%
             );
-            pointer-events: none;
+            /*pointer-events: none;*/
             z-index: 2;
         }
 
@@ -64,6 +64,7 @@
             z-index: 2;
             opacity: 0;
             animation: fadeInUp 1s 0.5s forwards;
+            pointer-events: auto;
         }
 
         .hero h1 {
@@ -153,6 +154,7 @@
             position: fixed;
             top: 0;
             left: 0;
+            pointer-events: none;
             width: 100%;
             height: 100%;
             background: var(--dark-bg);
@@ -404,7 +406,7 @@
     .nav-links {
         position: fixed;
         top: 0;
-        right: -100%;
+        right: 100%;
         height: 100vh;
         background: rgba(10, 10, 15, 0.95);
         backdrop-filter: blur(10px);
@@ -924,10 +926,9 @@
     // Mobile menu
     const navLinks = document.querySelector('.nav-links');
     
-    // Fixed mobile menu initialization
     document.addEventListener('DOMContentLoaded', () => {
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.querySelector('.nav-links');
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
 
     hamburger.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1000,12 +1001,6 @@
     // 2. Mobile Menu Functionality
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
-    
-    // Toggle menu
-    hamburger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navLinks.classList.toggle('nav-active');
-        hamburger.classList.toggle('toggle');
         
         // Animate menu items
         gsap.from('.nav-links li', {
@@ -1060,7 +1055,7 @@
         }
     });
 });
-        });
+
 
         // Three.js Particle System
         let scene, camera, renderer, particles;
@@ -1237,13 +1232,7 @@
                 card.style.transform = `translateZ(${translateZ}px)`;
             });
         });
-
-        // Mobile Menu
-        const hamburger = document.querySelector('.hamburger');
-        hamburger.addEventListener('click', () => {
-            document.body.classList.toggle('nav-active');
-        });
-
+        
     </script>
 </body>
 </html>
