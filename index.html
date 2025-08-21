@@ -579,7 +579,7 @@
               <ul class="list">
                 <li>480-hour full-stack immersion course</li>
                 <li>Certificate of recognition for dedication, growth, and completion of a full stack web application using the PERN tech stack</li>
-                <li>Team development: project planning, source control, daily scrum</li>
+                <li>Learned team development such as, project planning, source control, daily scrum</li>
               </ul>
             </article>
 
@@ -619,16 +619,20 @@
               <p class="muted">WebGL-based 3D visualizations and interactive experiences.</p>
             </div>
             <div class="skill">
-              <h3>🐘 PostgreSQL</h3>
+              <h3>🐬 PostgreSQL</h3>
               <p class="muted">Relational schema design, indexing, and query optimization.</p>
             </div>
             <div class="skill">
-              <h3>🎛️ C# & XAML</h3>
+              <h3> 💻 C# & XAML</h3>
               <p class="muted">Programming full stack cross-platform applications with .NET Maui and MySQL</p>
             </div>
             <div class="skill">
-              <h3>🎛️ C# & XAML</h3>
-              <p class="muted">Programming full stack cross-platform applications with .NET Maui and MySQL</p>
+              <h3>🍏 Apple Developer Program & App Store Connect</h3>
+              <p class="muted">Building Apps for iOS, managing and creating Certificates, Identifiers and Profiles, and publishing to the App Store</p>
+            </div>
+            <div class="skill">
+              <h3>🤖 Google Developers Console, Cloud Platform, and Play Store</h3>
+              <p class="muted">Building Apps for Android, creating and managing keystores, and publishing to the Play Store</p>
             </div>
           </div>
         </aside>
@@ -821,7 +825,7 @@
 
         // STARS
         const starGeometry = new THREE.BufferGeometry();
-        const starCount = 1500;
+        const starCount = 10500;
         const positions = new Float32Array(starCount * 3);
 
         for(let i=0; i<starCount*3; i++){
@@ -851,8 +855,8 @@
 
         function animate(){
             requestAnimationFrame(animate);
-                sun.rotation.y += 0.002;
-                angle += 0.003;
+                sun.rotation.y += 0.001;
+                angle += 0.005;
                 planet.position.set(
                     orbitRadius * Math.cos(angle),
                     0,
