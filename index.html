@@ -1,1267 +1,875 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jackson Abeyta - Full Stack Developer</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        /* Base Styles */
-        :root {
-            --light-blue: rgb(18, 170, 252);
-            --neon-white: rgb(255, 255, 255);
-            --dark-bg: #000000;
-            --text-primary: #ffffff;
-        }
+  <!-- 
+    Pre build list
+    Goals: readability, performance, accessibility, zero external deps.
+    Key optimizations to include:
+      • System font stack (no webfont downloads)
+      • CSS in <style>, JS deferred and tiny
+      • Uses modern CSS
+      • Semantic landmarks + skip link + accessible nav
+      • Color contrast AA, dark mode 
+      • Scroll-driven effects guarded by reduced motion
+      • Lightweight reveal-on-scroll 
+      • Structured data (JSON-LD) to help rich results
+  -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jackson Abeyta — Full Stack Developer & Technical Architect</title>
+  <meta name="description" content="Portfolio of Jackson Abeyta, Full Stack Developer & Technical Architect specializing in modern web apps and 3D experiences." />
+  <meta name="theme-color" content="#0f172a" />
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <!-- OPEN GRAPH -->
+  <meta property="og:title" content="Jackson Abeyta — Full Stack Developer" />
+  <meta property="og:description" content="Modern web applications and 3D experiences. React, AWS, Node.js, Three.js." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://jackabeyta.com" />
+  
+  
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
-            overflow-x: hidden;
-        }
+  <style>
+    /* ---------- BASES ---------- */
+    :root {
+      --bg: #0b1020;
+      --bg-2: #0e152b;
+      --txt: #e6edf6;
+      --muted: #b7c3d7;
+      --brand: #7dd3fc;
+      --brand-2: #38bdf8;
+      --accent: #a78bfa;
+      --ok: #34d399;
+      --card: #111833;
+      --border: #1f2a44;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --maxw: 1100px;
+      --pad: clamp(12px, 2.2vw, 24px);
+      --gap: clamp(14px, 2.2vw, 28px);
+    }
 
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            mask-image: linear-gradient(to bottom, 
-             rgba(0,0,0,1) 80%, 
-             rgba(0,0,0,0) 100%
-            );
-            -webkit-mask-image: linear-gradient(to bottom, 
-             rgba(0,0,0,1) 80%, 
-             rgba(0,0,0,0) 100%
-            );
-        }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc;
+        --bg-2: #f1f5f9;
+        --txt: #0b1020;
+        --muted: #334155;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --shadow: 0 12px 30px rgba(2,6,23,.1);
+      }
+    }
 
-        .particle-fade {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 20%;
-            background: linear-gradient(to bottom, 
-                transparent, 
-                var(--dark-bg) 80%
-            );
-            /*pointer-events: none;*/
-            z-index: 2;
-        }
+    /* BETTER DEFAULT TEXT RENDERING */
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
 
-        .hero-content { 
-            
-            text-align: center;
-            z-index: 2;
-            opacity: 0;
-            animation: fadeInUp 1s 0.5s forwards;
-            pointer-events: auto;
-        }
+    body {
+      margin: 0;
+      color: var(--txt);
+      background:
+        radial-gradient(1200px 800px at 10% -10%, #132043 0%, transparent 60%),
+        radial-gradient(1200px 800px at 110% 10%, #1a244a 0%, transparent 60%),
+        var(--bg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Ubuntu, Cantarell, "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      line-height: 1.6;
+    }
 
-        .hero h1 {
-            font-size: 4rem;
-            background: linear-gradient(45deg, var(--light-blue), var(--neon-white));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-            text-shadow: 
-            0 0 10px rgba(0, 255, 255, 0.3),
-            0 0 20px rgba(0, 255, 255, 0.2),
-            0 0 30px rgba(0, 255, 255, 0.1);
-        }
+    a {
+      color: var(--brand-2);
+      text-decoration: none;
+    }
 
-        .hero .subtitle {
-            text-shadow: 
-                0 0 8px rgba(0, 255, 255, 0.3),
-                0 0 15px rgba(0, 255, 255, 0.2);
-        }
+    a:focus-visible,
+    button:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
 
-        /* Add subtle animation */
-        @keyframes text-glow {
-            0% { text-shadow: 0 0 10px rgba(0, 255, 255, 0.3); }
-            50% { text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
-            100% { text-shadow: 0 0 10px rgba(0, 255, 255, 0.3); }
-        }
+    /* LAYOUT HELPERS */
+    .container {
+      max-width: var(--maxw);
+      margin-inline: auto;
+      padding: 0 var(--pad);
+    }
 
-        .hero h1 {
-            animation: text-glow 3s ease-in-out infinite;
-        }
+    .stack {
+      display: grid;
+      gap: var(--gap);
+    }
 
-        .hero .subtitle {
-            animation: text-glow 3s ease-in-out infinite 0.5s;
-        }
+    .grid {
+      display: grid;
+      gap: var(--gap);
+    }
 
-        .scroll-indicator {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: bounce 2s infinite;
-            font-size: 2.5rem; /* Increased from default */
-            color: var(--neon-cyan);
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-            background: rgba(15, 15, 25, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            backdrop-filter: blur(5px);
-            border: 2px solid var(--neon-cyan);
-        }
+    .grid.cols-2 {
+      grid-template-columns: 1fr;
+    }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @media (min-width: 860px) {
+      .grid.cols-2 {
+        grid-template-columns: 1.1fr 1fr;
+      }
+    }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { 
-                transform: translateY(0) translateX(-50%);
-                text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-            }
-            40% { 
-                transform: translateY(-30px) translateX(-50%);
-                text-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
-                scale: 1.2;
-            }
-            60% { 
-                transform: translateY(-15px) translateX(-50%);
-            }
-        }
+    /* CARDS */
+    .card {
+      background: linear-gradient(180deg, color-mix(in srgb, var(--card), transparent 10%) 0%, var(--card) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(16px, 2.4vw, 28px);
+    }
 
-/* Add pulsing animation */
-@keyframes pulse {
-    0% { opacity: 0.8; }
-    50% { opacity: 1; }
-    100% { opacity: 0.8; }
-}
+    /* HEADER / NAV */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: saturate(150%) blur(8px);
+      background: color-mix(in srgb, var(--bg), transparent 30%);
+      border-bottom: 1px solid var(--border);
+    }
 
-.scroll-indicator {
-    animation: 
-        bounce 2s infinite,
-        pulse 1.5s ease-in-out infinite;
-}
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
 
-        /* Add loading curtain */
-        .loading-curtain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            width: 100%;
-            height: 100%;
-            background: var(--dark-bg);
-            z-index: 9999;
-            animation: curtainFade 2s ease-out forwards;
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
 
-        @keyframes curtainFade {
-            0% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { opacity: 0; }
-        }   
+    .brand .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--ok);
+      box-shadow: 0 0 12px var(--ok);
+    }
 
-        /* Three.js Canvas */
-        .three-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-            opacity: 0;
-            animation: canvasFadeIn 2.5s ease-out forwards;
-            pointer-events: none;
-            will-change: transform;
-            contain: strict;
-        }
+    .menu {
+      display: flex;
+      gap: clamp(10px, 2vw, 22px);
+      align-items: center;
+    }
 
-        @keyframes canvasFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+    .menu a {
+      color: var(--muted);
+      font-weight: 600;
+    }
 
-        .clickable-social {
-            position: relative;
-            cursor: pointer;
-            display: inline-block;
-            padding: 12px;
-        }
+    .menu a:hover {
+      color: var(--txt);
+    }
 
-        .clickable-social::after {
-            content: '';
-            position: absolute;
-            top: -15px;
-            left: -15px;
-            right: -15px;
-            bottom: -15px;
-            z-index: 1;
-        }
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--txt);
+      font-size: 1.15rem;
+    }
 
-        .social-icon {
-            position: relative;
-            z-index: 2;
-            color: var(--light-blue); /* Set SVG color */
-            filter: drop-shadow(0 0 8px rgba(18, 170, 252, 0.3));
-            transition: all 0.3s ease;
-        }
+    @media (max-width: 760px) {
+      .menu {
+        display: none;
+      }
+      .menu.open {
+        display: flex;
+        position: absolute;
+        right: var(--pad);
+        top: 64px;
+        flex-direction: column;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .hamburger {
+        display: block;
+      }
+    }
 
-        .clickable-social:hover .social-icon {
-            color: var(--neon-white);
-            filter: drop-shadow(0 0 12px rgba(18, 170, 252, 0.5));
-        }
+    /* HERO */
+    .hero {
+      padding: clamp(32px, 5vw, 80px) 0;
+      background:
+        radial-gradient(600px 400px at 0% 0%, color-mix(in srgb, var(--brand), transparent 70%) 0%, transparent 60%),
+        radial-gradient(800px 600px at 100% 0%, color-mix(in srgb, var(--accent), transparent 75%) 0%, transparent 60%);
+    }
 
-        .social-icon:hover {
-            color: var(--neon-white);
-            filter: drop-shadow(0 0 12px rgba(18, 170, 252, 0.5));
-        }
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.1;
+      letter-spacing: .2px;
+    }
 
-        /* Fix LinkedIn URL casing */
-        a[href*="linkedin"] {
-            text-decoration: none !important;
-        }
+    .subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--muted);
+    }
 
-        /* Navigation */
-        .nav-menu {
-            pointer-events: all; /* Ensure clickability */
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            z-index: 1000;
-        }
-        .nav-links {
-            width: 250px;
-            pointer-events: all;
-            }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .5ch;
+      padding: .4rem .7rem;
+      border-radius: 999px;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+    }
 
-        .nav-links a {
-            color: var(--text-primary);
-            text-decoration: none;
-            font-size: 1.2rem;
-        }
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
 
-        .hamburger {
-            width: 30px;
-            height: 20px;
-            position: relative;
-            z-index: 1001; /* Above particle canvas */
-        }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .6ch;
+      font-weight: 700;
+      letter-spacing: .2px;
+      border-radius: 12px;
+      padding: .75rem 1rem;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--bg-2), transparent 10%), var(--bg-2));
+      color: var(--txt);
+    }
 
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .nav-menu { right: 1rem; }
-        }
-    </style>
-    <meta name="description" content="Jackson Abeyta - Full Stack Developer specializing in modern web applications and 3D experiences">
-    <meta name="keywords" content="Full Stack Developer, React, Three.js, Web Development">
-</head>
-<body>
-    <div class="loading-curtain"></div>
-    <!-- Navigation -->
-    <nav class="nav-menu">
-        <div class="hamburger">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </div>
-        <ul class="nav-links">
-            <li><a href="#hero">Home</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-    </nav>
+    .btn.primary {
+      background: linear-gradient(180deg, var(--brand), var(--brand-2));
+      color: #032233;
+      border-color: color-mix(in srgb, var(--brand-2), #000 20%);
+    }
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <canvas class="three-canvas"></canvas>
-        <div class="hero-content" style="pointer-events: auto; position: relative; z-index: 3;">
-            <h1>Jackson Abeyta</h1>
-            <p class="subtitle">Full Stack Developer & Technical Architect</p>
-            <div class="contact-info">
-                <p>📧 jackson.abeyta@hotmail.com </p>
-            </div>
-            <div class="hero-socials">
-                <a href="https://github.com/Jack-Jackk" target="_blank" rel="noopener" aria-label="GitHub" class="clickable-social">
-                    <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.6.113.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                </a>
-                <a href="https://linkedin.com/in/jackson-abeyta" target="_blank" rel="noopener" aria-label="LinkedIn" class="clickable-social">
-                    <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M19 0H5a5 5 0 0 0-5 5v14a5 5 0 0 0 5 5h14a5 5 0 0 0 5-5V5a5 5 0 0 0-5-5zM8 19H5V8h3v11zM7 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm12 13h-3v-5.5c0-1.38-.5-2-1.5-2s-1.5.62-1.5 2V19h-3V8h3v1.5h.5A2.5 2.5 0 0 1 16 9.5V19h4z"/>
-                    </svg>
-                </a>
-            </div>
-        </div>
-        </div>
-        <div class="scroll-indicator">↓</div>
-    </section>
+    .btn:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+      transition: filter .2s, transform .2s;
+    }
 
-    <section class="section" id="experience">
-        <div class="timeline">
-            <div class="timeline-line"></div>
-            
-            <!-- Featured Project -->
-            <div class="timeline-card featured">
-                <div class="card-content">
-                    <div class="card-glow"></div>
-                    <h3>🚀 Featured Project: MakerMatch</h3>
-                    <p class="date"> Founder/Full Stack Developer | 2022-Present</p>
-                    <ul class="achievements">
-                        <li>Creating an infrastructure to serve more than 50k customers and creators</li>
-                        <li>Implementing algorithms for optimization of user experience</li>
-                        <li>Designing a modular, scalable architecture and business model</li>
-                    </ul>
-                </div>
-            </div>
+    /* SECTIONS */
+    section {
+      scroll-margin-top: 80px;
+    }
 
-            <!-- Regular Timeline Items -->
-            <div class="timeline-card">
-                <div class="card-content">
-                    <h3>Junior Developer @ Allwater Marine Group</h3>
-                    <p class="date">2024-Present</p>
-                    <ul>
-                        <li>Led migration from legacy PHP system to NET MAUI stack</li>
-                        <li>Learned C#, Azure, and .NET MAUI in order to create a new cross-platform codebase</li>
-                        <li>Designed and implemented a clean, modern UI, with a refresh on the information and walkthroughs.</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="timeline-card">
-                <div class="card-content">
-                    <h3>Student @ JRS Coding</h3>
-                    <p class="date">May 2024-August 2024</p>
-                    <ul>
-                        <li>480-Hour Full-Stack Development Immersion Course</li>
-                        <li>Gained a certificate of recognition from JRS Coding showing my dedication to learning, growing, and improving my coding skills everyday.</li>
-                        <li>Made connections with tons of excellent programmers, and learned how to work in a team development enviroment, using project planning techniques, source control, and daily scrum meetings.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
+    .section-title {
+      font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+      margin: 0 0 .5rem 0;
+    }
 
-    <!-- Skills Grid Section -->
-    <section class="section" id="skills">
-        <h2 class="section-title">Technical Arsenal</h2>
-        <div class="skills-grid">
-            <div class="skill-card" data-category="frontend">
-                <div class="skill-header">
-                    <div class="skill-icon">⚛️</div>
-                    <h3 class="skill-title">React</h3>
-                </div>
-                <p class="skill-desc">Advanced component architecture with hooks, Context API, and React Router</p>
-            </div>
-    
-            <div class="skill-card" data-category="cloud">
-                <div class="skill-header">
-                    <div class="skill-icon">☁️</div>
-                    <h3 class="skill-title">AWS</h3>
-                </div>
-                <p class="skill-desc">EC2, S3, Lambda, and DynamoDB deployment with Terraform infrastructure</p>
-            </div>
-    
-            <div class="skill-card" data-category="backend">
-                <div class="skill-header">
-                    <div class="skill-icon">🚀</div>
-                    <h3 class="skill-title">Node.js</h3>
-                </div>
-                <p class="skill-desc">High-performance REST/GraphQL APIs with Express and Apollo Server</p>
-            </div>
-            <div class="skill-card" data-category="3d">
-                <div class="skill-header">
-                    <div class="skill-icon">🎮</div>
-                    <h3 class="skill-title">Three.js</h3>
-                </div>
-                <p class="skill-desc">WebGL-based 3D visualizations and interactive experiences</p>
-            </div>
-    
-            <div class="skill-card" data-category="database">
-                <div class="skill-header">
-                    <div class="skill-icon">🗃️</div>
-                    <h3 class="skill-title">PostgreSQL</h3>
-                </div>
-                <p class="skill-desc">Relational database design with query optimization and indexing</p>
-            </div>
-    
-            <div class="skill-card" data-category="web">
-                <div class="skill-header">
-                    <div class="skill-icon">🌐</div>
-                    <h3 class="skill-title">WebGL</h3>
-                </div>
-                <p class="skill-desc">Low-level graphics programming and shader development</p>
-            </div>
-        </div>
-    </section>
+    .muted {
+      color: var(--muted);
+    }
 
-    <style>
-        /* Mobile Menu */
-    .nav-links {
+    .kpis {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .kpi-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .kpi {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: .5rem .7rem;
+      color: var(--muted);
+    }
+
+    /* LISTS */
+    .list {
+      padding-left: 1.2rem;
+      margin: .4rem 0 0 0;
+    }
+
+    .list li {
+      margin: .3rem 0;
+    }
+
+    /* “TECH ARSENAL” GRID */
+    .skills {
+      display: grid;
+      gap: var(--gap);
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .skill h3 {
+      margin: .2rem 0;
+      font-size: 1.05rem;
+    }
+
+    /* TIMELINE STYLE FOR EXPERIENCE / EDUCATION */
+    .timeline {
+      position: relative;
+    }
+
+    .timeline:before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .item {
+      position: relative;
+      padding-left: 28px;
+      margin: 12px 0;
+    }
+
+    .item:before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: .45rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--brand-2);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-2), transparent 75%);
+    }
+
+    .item h3 {
+      margin: .1rem 0;
+      font-size: 1.05rem;
+    }
+
+    .item .role {
+      font-weight: 700;
+    }
+
+    .item .where {
+      color: var(--muted);
+    }
+
+    /* CONTACT FORM */
+    .contact-form {
+    display: grid;
+    gap: var(--gap);
+    }
+
+    .contact-form label {
+    font-weight: 600;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .5rem .7rem;
+    color: var(--muted);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    box-shadow: none;
+    appearance: none;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+    outline: none;
+    border-color: var(--brand-2);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-2), transparent 70%);
+    color: var(--txt);
+    background: var(--bg-2);
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+    color: var(--muted);
+    opacity: 1;
+    }
+
+    .contact-form button {
+    background: linear-gradient(180deg, var(--brand), var(--brand-2));
+    color: #032233;
+    border: 1px solid color-mix(in srgb, var(--brand-2), #000 20%);
+    border-radius: 12px;
+    padding: .75rem 1rem;
+    font-weight: 700;
+    letter-spacing: .2px;
+    cursor: pointer;
+    transition: filter .2s, transform .2s;
+    }
+
+    .contact-form button:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+      padding: 28px 0;
+    }
+
+    /* REVEAL ANIMATION */
+    .reveal {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+
+    /* ENSURE THREE.JS CANVAS STAYS BEHIND CONTENT */
+    #bg-canvas {
         position: fixed;
         top: 0;
-        right: 100%;
-        height: 100vh;
-        background: rgba(10, 10, 15, 0.95);
-        backdrop-filter: blur(10px);
-        padding: 6rem 2rem;
-        transition: right 0.3s ease;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none; 
     }
 
-    .nav-active { right: 0; }
+  </style>
 
-    .nav-links li {
-        margin: 2rem 0;
-        opacity: 0;
-        transform: translateX(20px);
-    }
+  <!-- STRUCTURED DATA -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Person",
+    "name":"Jackson Abeyta",
+    "jobTitle":"Full Stack Developer & Technical Architect",
+    "url":"https://jackabeyta.com",
+    "email":"mailto:jackson.abeyta@hotmail.com",
+    "knowsAbout":["React","AWS","Node.js","Three.js","PostgreSQL","WebGL"],
+    "alumniOf":[{"@type":"EducationalOrganization","name":"JRS Coding"}]
+  }
+  </script>
+</head>
+<body>
 
-    .hamburger .bar {
-        display: block;
-        width: 25px;
-        height: 3px;
-        background: var(--light-blue);
-        margin: 5px auto;
-        transition: all 0.3s ease;
-    }
+  <!-- Background canvas -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
 
-    .toggle .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-    .toggle .bar:nth-child(2) { opacity: 0; }
-    .toggle .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+  <!-- SKIP LINK FOR KEYBOARD / SCREEN READER USERS -->
+  <a href="#content" class="chip" style="position:absolute; left:-9999px;">Skip to content</a>
 
-    /* Final Polish */
-    [data-tooltip]::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        background: rgba(0,0,0,0.8);
-        color: var(--light-blue);
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
-        white-space: nowrap;
-        opacity: 0;
-        transition: opacity 0.2s;
-    }
+  <header aria-label="Site">
+    <div class="container nav">
+      <div class="brand" aria-label="Brand">
+        <span class="dot" aria-hidden="true"></span>
+        <span>Jackson <span class="muted">Abeyta</span></span>
+      </div>
 
-    [data-tooltip]:hover::after {
-        opacity: 1;
-    }
-        /* Work Experience Timeline */
-        .section {
-            padding: 8rem 2rem;
-            position: relative;
-        }
+      <nav aria-label="Main">
+        <button class="hamburger" id="menuBtn" aria-expanded="false" aria-controls="menuItems">☰ Menu</button>
+        <div id="menuItems" class="menu">
+          <a href="#experience">Experience</a>
+          <a href="#education">Education</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+    </div>
+  </header>
 
-        .timeline {
-            position: relative;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+  <main id="content" class="stack">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container grid cols-2">
+        <div class="stack reveal" style="gap:12px;">
+          <span class="chip">Full Stack Developer & Technical Architect</span>
+          <h1>Jackson Abeyta</h1>
+          <p class="subtitle">
+            I build modern web applications and 3D experiences for the browser—combining robust backends with intuitive, high-performance UIs.
+          </p>
+          <div class="kpis" aria-label="Highlights">
+            <div class="kpi-row">
+                <p class="muted">Frameworks</p>
+                <span class="kpi">React • React Native • Express.js • Expo • .NET Maui</span>
+            </div>
+            <div class="kpi-row">
+                <p class="muted">Languages</p>
+                <span class="kpi">JavaScript • C# • Python • C++ • Lua</span>
+            </div>
+            <div class="kpi-row">
+                <p class="muted">DBMS</p>
+                <span class="kpi">MySQL • PostgreSQL</span>
+            </div>
+            <div class="kpi-row">
+                <p class="muted">3D / Engines</p>
+                <span class="kpi">Three.js • UE4&5 • Blender • Unity • Godot</span>
+            </div>
+            </div>
+          <div class="cta-row" style="margin-top:8px">
+            <nl>
+                <a class="btn primary" href="#contact" aria-label="Jump to contact section">Contact Me</a>
+                <a class="btn" href="mailto:jackson.abeyta@hotmail.com" rel="nofollow">jackson.abeyta@hotmail.com</a>
+            </nl>
+            <a class="btn" href="#experience">View Experience ↓</a>
+          </div>
+        </div>
 
-        .timeline-line {
-            position: absolute;
-            left: 50%;
-            width: 4px;
-            background: linear-gradient(
-                to bottom,
-                transparent,
-                var(--light-blue),
-                transparent
-            );
-            height: 100%;
-        }
+        <!-- “FEATURED PROJECT” -->
+        <div class="card reveal" role="region" aria-labelledby="feat-title">
+          <p class="muted" style="margin:0 0 .25rem 0;">Featured Project 1</p>
+          <h2 id="feat-title" class="section-title">MakerMatch</h2>
+          <p class="muted" style="margin:.2rem 0 1rem 0;"><strong>Founder / Full Stack Developer</strong> · 2023–Present</p>
+          <ul class="list">
+            <li>Creating infrastructure to serve more than 50k customers and creators</li>
+            <li>Implementing algorithms to optimize user experience</li>
+            <li>Designing easy-to-use interfaces, and user-friendly social experiences</li>
+          </ul>
+          <br>
+          <p class="muted" style="margin:0 0 .25rem 0;">Featured Project 2</p>
+          <h2 id="feat-title" class="section-title">iCO Emergency</h2>
+          <p class="muted" style="margin:.2rem 0 1rem 0;"><strong>Lead Developer / Project Manager</strong> · 2024–Present</p>
+          <ul class="list">
+            <li>Creating scalable infrastructure to serve fluctuating MAUs</li>
+            <li>Implementing GPS tracking logic locally and remotely</li>
+            <li>Designing a modular, scalable architecture and business model</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-        .timeline-card {
-            position: relative;
-            width: 45%;
-            margin: 4rem 0;
-            transform: translateY(50px);
-            opacity: 0;
-            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-        }
+    <!-- EXPERIENCE -->
+    <section id="experience" class="container stack reveal">
+      <h2 class="section-title">Experience</h2>
 
-        .timeline-card:nth-child(odd) {
-            left: 55%;
-        }
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="timeline" aria-label="Professional timeline">
+            <article class="item">
+              <p class="role">Mid-Level Developer</p>
+              <p class="where">@ Allwater Marine Group · <span class="muted">2024–Present</span></p>
+              <ul class="list">
+                <li>Led migration from legacy PHP system to .NET MAUI stack</li>
+                <li>Learned C#, Azure, and .NET MAUI to create a new cross-platform codebase</li>
+                <li>Led a 2nd Migration to React Native for better support and documentation</li>
+                <li>Designed and implemented a clean, functional, modern UI.</li>
+                <li>Aided implementation of backend services.</li>
+              </ul>
+            </article>
 
-        .timeline-card:nth-child(even) {
-            left: 0;
-        }
+            <article class="item">
+              <p class="role">Student</p>
+              <p class="where">@ JRS Coding · <span class="muted">May 2023 – Aug 2023</span></p>
+              <ul class="list">
+                <li>480-hour full-stack immersion course</li>
+                <li>Certificate of recognition for dedication, growth, and completion of a full stack web application using the PERN tech stack</li>
+                <li>Team development: project planning, source control, daily scrum</li>
+              </ul>
+            </article>
 
-        .card-content {
-            background: rgba(15, 15, 25, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 2rem;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.4s;
-        }
+            <article class="item">
+              <p class="role">Self Learning</p>
+              <p class="where">@ Home · <span class="muted">May 2020 – Present</span></p>
+              <ul class="list">
+                <li>Learning AI to enhance my workflow capabilities, and increase my time to production</li>
+                <li>Learned the basics of robotics programming and electrical engineering with an Arduino and C++</li>
+                <li>Made simple web pages using HTML and CSS</li>
+                <li>Used Youtube and forum posts to create a top-down, 2D adventure game using Godot</li>
+                <li>Created 3D assets and scenes using Blender and their in-house guides and tutorials</li>
+                <li>Built a simple 3D FPS game using Unity and C#</li>
+              </ul>
+            </article>
+          </div>
+        </div>
 
-        .timeline-card:hover .card-content {
-            transform: translateZ(20px) rotateX(5deg);
-        }
+        <!-- SkKILLS SUMMARY CARD -->
+        <aside class="card" role="complementary" aria-labelledby="arsenal">
+          <h3 id="arsenal" class="section-title">Technical Arsenal</h3>
+          <div class="skills" style="margin-top:.6rem;">
+            <div class="skill">
+              <h3>⚛️ React & React Native</h3>
+              <p class="muted">Advanced component architecture with Hooks, Context API, and React Router.</p>
+            </div>
+            <div class="skill">
+              <h3>☁️ Expo</h3>
+              <p class="muted">Managed app builds and deployments with Expo and Expo Go.</p>
+            </div>
+            <div class="skill">
+              <h3>🟩 Node.js</h3>
+              <p class="muted">High-performance REST APIs with Express & Docker.</p>
+            </div>
+            <div class="skill">
+              <h3>🧊 Three.js</h3>
+              <p class="muted">WebGL-based 3D visualizations and interactive experiences.</p>
+            </div>
+            <div class="skill">
+              <h3>🐘 PostgreSQL</h3>
+              <p class="muted">Relational schema design, indexing, and query optimization.</p>
+            </div>
+            <div class="skill">
+              <h3>🎛️ C# & XAML</h3>
+              <p class="muted">Programming full stack cross-platform applications with .NET Maui and MySQL</p>
+            </div>
+            <div class="skill">
+              <h3>🎛️ C# & XAML</h3>
+              <p class="muted">Programming full stack cross-platform applications with .NET Maui and MySQL</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
 
-        .featured .card-content {
-            border: 2px solid var(--neon-white);
-            box-shadow: 0 0 30px rgba(43, 124, 255, 0.477);
-        }
-
-        /* Skills Grid */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .skill-card {
-            background: rgba(15, 15, 25, 0.9);
-            border-radius: 15px;
-            padding: 2rem;
-            min-height: 200px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .skill-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                hsl(var(--hue), 70%, 45%),
-                hsl(calc(var(--hue) + 60), 70%, 45%)
-            );
-            opacity: 0.1;
-            z-index: 1;
-            transition: opacity 0.3s;
-        }
-
-        .skill-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.15);
-        }
-
-        .skill-card:hover::before {
-            opacity: 0.2;
-        }
-
-        .skill-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .skill-icon {
-            font-size: 2rem;
-            filter: drop-shadow(0 0 5px rgba(0,255,255,0.5));
-        }
-
-        .skill-title {
-            font-size: 1.5rem;
-            /* Fallback for older browsers */
-            color: var(--neon-cyan);
-            /* Gradient text with proper vendor prefixes */
-            background: linear-gradient(45deg, 
-                hsl(var(--hue), 70%, 60%), 
-                hsl(calc(var(--hue) + 30), 70%, 60%));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }   
-
-        /* Add hue variables to each skill card */
-        .skill-card[data-category="frontend"] { --hue: 180; } /* React */
-        .skill-card[data-category="cloud"] { --hue: 210; }    /* AWS */
-        .skill-card[data-category="backend"] { --hue: 280; }  /* Node.js */
-        .skill-card[data-category="3d"] { --hue: 120; }       /* Three.js */
-        .skill-card[data-category="database"] { --hue: 240; } /* PostgreSQL */
-        .skill-card[data-category="web"] { --hue: 160; }      /* WebGL */
-
-        .skill-desc {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .skill-tag {
-            padding: 1.5rem;
-            text-align: center;
-            border-radius: 10px;
-            background: hsl(var(--hue), 70%, 45%);
-            transform-style: preserve-3d;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .skill-tag:hover {
-            transform: translateY(-5px) translateZ(10px);
-            box-shadow: 0 10px 20px rgba(67, 161, 255, 0.506);
-        }
-
-        /* Animations */
-        .reveal {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .skills-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        
-        .skill-card {
-            min-height: auto;
-            padding: 1.5rem;
-        }
-
-        @media (max-width: 1024px) {
-            .skills-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .skills-grid {
-                grid-template-columns: 1fr;
-            }
-
-        @media (max-width: 768px) {
-            .timeline-card {
-                width: 90%;
-                left: 5% !important;
-            }
-        }
-    }
-    </style>
-<!--==========================================================================================================-->
-     <!-- Education Section -->
-
-     <section class="section" id="education">
+    <!-- EDUCATION -->
+    <section id="education" class="container grid cols-2 rows-2 reveal">
+      <div style="grid-row: 1 / span 2;">
         <h2 class="section-title">Education & Certifications</h2>
-        <div class="education-grid">
-            <div class="education-card">
-                <div class="card-content">
-                    <h3>🎓 Full Stack Web Development</h3>
-                    <p class="institute">Tech University</p>
-                    <p class="date">2020-2021</p>
-                    <ul class="achievements">
-                        <li>Mastered MERN stack architecture</li>
-                        <li>98% Final Project Score</li>
-                    </ul>
-                    <div class="certificate-glow"></div>
-                </div>
-            </div>
-            <!-- More education cards -->
+        <div class="card">
+          <div class="timeline">
+            <article class="item">
+              <p class="role">Certificate for Full Stack Web Development</p>
+              <p class="where">JRS Coding · <span class="muted">2024</span></p>
+              <ul class="list">
+                <li>Learned fundamentals of JavaScript, HTML5, CSS3</li>
+                <li>Mastered PERN stack architecture</li>
+              </ul>
+            </article>
+            <article class="item">
+              <p class="role">High Scool Diploma</p>
+              <p class="where">Connections Academy · <span class="muted">2020</span></p>
+              <ul class="list">
+                <li>Learned fundamentals of teamwork, dedication, and communication.</li>
+                <li>Mastered relationship buidling and social interaction</li>
+              </ul>
+            </article>
+          </div>
         </div>
+      </div>
+
+      <!-- LANGUAGES -->
+      <div id="languages">
+        <h2 class="section-title">Language Proficiency</h2>
+        <div class="card">
+          <ul class="list" aria-label="Languages">
+            <li>日本語 — <strong>N3</strong> level</li>
+            <li>Français — <strong>B1</strong> level</li>
+            <li>Español — <strong>B1</strong> level</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- CONTACT -->
+      <div id="contact" class="container reveal">
+        <h2 class="section-title">Let’s Connect</h2>
+        <div class="card">
+            <p class="muted">Prefer email? Fill out the form below.</p>
+            <form class="contact-form" id="contactForm">
+            <label for="from_email">Email</label>
+            <input type="email" id="from_email" name="from_email" required>
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+            <button type="submit" class="btn primary" id="submitBtn">✉️ Email Me</button>
+            <span id="formStatus" class="muted" style="margin-top:8px;display:block;"></span>
+            </form>
+        </div>
+        <p>
+          <a class="btn" href="#top" aria-label="Back to top">↑ Back to top</a>
+        </p>
+      </div>
     </section>
+  </main>
 
-<!--==========================================================================================================-->
-    <!-- Languages & Hobbies -->
-    <section class="section" id="hobbies">
-        <div class="two-column">
-            <div class="language-progress">
-                <h2 class="section-title">Language Proficiency</h2>
-    <div class="languages-grid">
-        <div class="language-card" data-language="japanese">
-            <div class="language-header">
-                <div class="language-icon">🇯🇵 - 日本語</div>
-                <h3 class="language-title">Japanese</h3>
-            </div>
-            <div class="progress-container">
-                <div class="progress-bar" data-level="40">
-                    <div class="progress-fill"></div>
-                </div>
-                <span class="progress-text">N3 Level</span>
-            </div>
-        </div>
+  <footer role="contentinfo">
+    <div class="container stack">
+      <p class="muted">© <span id="year"></span> Jackson Abeyta. All rights reserved.</p>
+      <p class="muted" style="font-size:.95rem">
+        Built as a single HTML file with attention to performance, accessibility, and maintainability.
+      </p>
+    </div>
+  </footer>
 
-        <div class="language-card" data-language="french">
-            <div class="language-header">
-                <div class="language-icon">🇫🇷 - Français</div>
-                <h3 class="language-title">French</h3>
-            </div>
-            <div class="progress-container">
-                <div class="progress-bar" data-level="50">
-                    <div class="progress-fill"></div>
-                </div>
-                <span class="progress-text">B1 Level</span>
-            </div>
-        </div>
+  <!-- THREE.JS FROM CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
-        <div class="language-card" data-language="spanish">
-            <div class="language-header">
-                <div class="language-icon">🇪🇸 - Español</div>
-                <h3 class="language-title">Spanish</h3>
-            </div>
-            <div class="progress-container">
-                <div class="progress-bar" data-level="50">
-                    <div class="progress-fill"></div>
-                </div>
-                <span class="progress-text">B1 Level</span>
-            </div>
-        </div>
-    </section>
+  <!-- EMAIL JS CONTACT FORM -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  
+  <script>
+  emailjs.init('6roafnbAgT4xdxH0Y');
+  document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('submitBtn');
+    const status = document.getElementById('formStatus');
+    const email = document.getElementById('from_email').value;
+    const message = document.getElementById('message').value;
 
-<!--==========================================================================================================-->
-    <!-- Contact Section -->
-    <script>emailjs.init('6roafnbAgT4xdxH0Y');</script> 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-         const response = await emailjs.send(
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+    status.textContent = '';
+
+    try {
+      await emailjs.send(
         'service_uecjxj2', // Service ID
         'template_jh8yqos', // Template ID
         {
-          from_name: email,
           from_email: email,
           message: message,
-          to_email: 'jackson.abeyta@hotmail.com' // Add this line
+          to_email: 'jackson.abeyta@hotmail.com'
         }
       );
+      status.textContent = 'Message sent! Thank you.';
+      document.getElementById('contactForm').reset();
+    } catch (err) {
+      status.textContent = 'Sorry, there was an error sending your message.';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '✉️ Email Me';
+    }
+  });
+</script>
 
-        document.getElementById('contactForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('submit');
-        const email = document.getElementById('from_email').value;
-        const message = document.getElementById('message').value;
-        })
-    </script>
-    <footer class="section" id="contact">
-        <h2 class="section-title">Let's Connect</h2>
-        <form id="contact-form" class="contact-form">
-            <label>Email</label>
-            <input type="email" name="from_email" required>
-            <label>Message</label>
-            <textarea name="message" required></textarea>
-            <button id="submit" type="submit">Send Message 🚀</button>
-        </form>
-        <!-- <form class="contact-form">
-            <input type="hidden" name="time" value=`${new Date().toISOString()}`>
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
-            <textarea placeholder="Your Message" name="message" rows="5"  required></textarea>
-            <button type="submit" value="Send">Send Message 🚀</button>
-        </form> -->
-        <div class="hero-socials" style="display: flex; justify-content: center; margin-top: 3rem;">
-            <a href="https://github.com/Jack-Jackk" target="_blank" rel="noopener" aria-label="GitHub" class="clickable-social">
-                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.6.113.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-                </svg>
-            </a>
-            <a href="https://linkedin.com/in/jackson-abeyta" target="_blank" rel="noopener" aria-label="LinkedIn" class="clickable-social">
-                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M19 0H5a5 5 0 0 0-5 5v14a5 5 0 0 0 5 5h14a5 5 0 0 0 5-5V5a5 5 0 0 0-5-5zM8 19H5V8h3v11zM7 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm12 13h-3v-5.5c0-1.38-.5-2-1.5-2s-1.5.62-1.5 2V19h-3V8h3v1.5h.5A2.5 2.5 0 0 1 16 9.5V19h4z"/>
-                </svg>
-            </a>
-        </div>
-    </footer>
+  <script defer>
 
-<!--==========================================================================================================-->
-                <!--LANGUAGE EDUCATION HOBBIES AND CONTACT SECTION CSS LINE 722-889-->
-
-    <style>
-                /* Language Proficiency Styles */
-        .languages-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .language-card {
-            background: rgba(15, 15, 25, 0.9);
-            border-radius: 15px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .language-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.1);
-        }
-
-        .language-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .language-icon {
-            font-size: 1.8rem;
-            filter: drop-shadow(0 0 5px rgba(0,255,255,0.3));
-        }
-
-        .language-title {
-            font-size: 1.3rem;
-            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-magenta));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .progress-container {
-            position: relative;
-            margin-top: 1rem;
-        }
-
-        .progress-bar {
-            background: rgba(255, 255, 255, 0.1);
-            height: 12px;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
-            width: 0;
-            transition: width 1s ease;
-            border-radius: 6px;
-        }
-
-        .progress-text {
-            display: block;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--neon-cyan);
-        }
-
-        @media (max-width: 768px) {
-            .languages-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        /* Education Section */
-        .education-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
-        }
-
-        .education-card {
-            background: linear-gradient(145deg, #0f0f1a, #1a1a2f);
-            border-radius: 15px;
-            transform: translateX(-50px);
-            opacity: 0;
-            transition: all 0.6s ease;
-        }
-
-        .education-card.reveal {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        /* Progress Bars */
-        .progress-bar {
-            background: rgba(255,255,255,0.1);
-            height: 25px;
-            border-radius: 12px;
-            margin: 1rem 0;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--light-blue), var(--neon-white));
-            width: 0;
-            transition: width 1s ease;
-        }
-
-        /* Hobbies Grid */
-        .hobbies-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-        }
-
-        .hobby-icon {
-            width: 80px;
-            height: 80px;
-            animation: float 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px rgba(64, 137, 254, 0.46));
-        }
-
-        /* Contact Form */
-        .contact-form {
-            max-width: 600px;
-            margin: 2rem auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .contact-form input, 
-        .contact-form textarea {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--light-blue);
-            padding: 1rem;
-            color: white;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .contact-form button {
-            background: linear-gradient(45deg, var(--light-blue), var(--neon-white));
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 8px;
-            transition: transform 0.3s ease;
-        }
-
-
-        /* Animations */
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        @media (max-width: 768px) {
-            .two-column {
-                flex-direction: column;
-                gap: 3rem;
-            }
-        }
-    </style>
-    
-    <!--==========================================================================================================-->
-
-    <script>
-        // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', (e) => {
-            e.preventDefault();
-            document.querySelector(anchor.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
-
-    // Mobile menu
-    const navLinks = document.querySelector('.nav-links');
-    
-    document.addEventListener('DOMContentLoaded', () => {
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
-
-    hamburger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navLinks.classList.toggle('nav-active');
-        hamburger.classList.toggle('toggle');
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.nav-menu')) {
-            navLinks.classList.remove('nav-active');
-            hamburger.classList.remove('toggle');
-        }
-    });
-});
-
-        // Progress Bar Animation
-        document.querySelectorAll('.progress-bar').forEach(bar => {
-            const level = bar.dataset.level;
-            bar.querySelector('.progress-fill').style.width = `${level}%`;
-        });
-
-        // Social Link Hover
-        document.querySelectorAll('.social-link').forEach(link => {
-            link.addEventListener('mouseover', () => {
-                link.style.filter = 'drop-shadow(0 0 15px rgba(43, 124, 255,0.7))';
-            });
-        });
-
-        // Final Three.js Enhancements
-        function createGeometryTransition() {
-            const geometry = new THREE.IcosahedronGeometry(2, 2);
-            const material = new THREE.MeshBasicMaterial({
-                color: 0x00ffff,
-                wireframe: true,
-                transparent: true
-            });
-            const mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
-
-            window.addEventListener('scroll', () => {
-                mesh.rotation.x = window.scrollY * 0.001;
-                mesh.rotation.y = window.scrollY * 0.002;
-            });
-        }
-
-        // Initialize remaining components
-        window.addEventListener('load', () => {
-            createGeometryTransition();
-            window.addEventListener('load', () => {
-    // 1. Smooth Scroll Implementation
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = document.querySelector(anchor.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-
-    // 2. Mobile Menu Functionality
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
-        
-        // Animate menu items
-        gsap.from('.nav-links li', {
-            x: 20,
-            opacity: 0,
-            stagger: 0.1,
-            duration: 0.3,
-            ease: 'power2.out'
-        });
-    });
-
-    // Close menu on outside click
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.nav-menu')) {
-            navLinks.classList.remove('nav-active');
-            hamburger.classList.remove('toggle');
-        }
-    });
-
-    // 3. Final Polish
-    // Initialize scroll animations
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('reveal');
-            }
-        });
-    }, { threshold: 0.1 });
-
-    // Observe elements
-    document.querySelectorAll('.timeline-card, .education-card').forEach(el => observer.observe(el));
-    
-    // Add hover effects to skill cards
-    document.querySelectorAll('.skill-card').forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
-        });
-    });
-
-    // Initialize particle system
-    createGeometryTransition();
-    
-    // Add keyboard accessibility
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && navLinks.classList.contains('nav-active')) {
-            navLinks.classList.remove('nav-active');
-            hamburger.classList.remove('toggle');
-        }
-    });
-});
-
-
-    // Three.js Particle System
-    let scene, camera, renderer, particles;
-    const mouse = { x: 0, y: 0 };
-
-    function initThreeScene() {
-        const canvas = document.querySelector('.three-canvas');
-        
-        // Scene setup
-        scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        renderer = new THREE.WebGLRenderer({ 
-            canvas, 
-            alpha: true,
-            antialias: true 
-        });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-
-        // Initial clear color with alpha
-        renderer.setClearColor(0x000000, 0);
-
-        // Particle material with initial zero opacity
-        const material2 = new THREE.PointsMaterial({
-            size: 0.02,
-            sizeAttenuation: true, 
-            color: new THREE.Color().setHSL(0.6, 0.8, 0.7),
-            transparent: true,
-            opacity: 0
-        });
-
-        // Animate opacity over time
-        let fadeProgress = 0;
-        const animateFade = () => {
-        if(fadeProgress < 1) {
-            fadeProgress += 0.008;
-            particles.material.opacity = THREE.MathUtils.lerp(0, 0.8, fadeProgress);
-            }
-        };
-        
-            // Particle geometry
-        const geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(5000 * 3);
-        
-        for(let i = 0; i < 15000; i += 3) {
-            positions[i] = (Math.random() - 0.5) * 10;
-            positions[i+1] = (Math.random() - 0.5) * 10;
-            positions[i+2] = (Math.random() - 0.5) * 10;
-        }
-        
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        
-            // Particle material with fade-in capability
-        const material = new THREE.PointsMaterial({
-            size: 0.02,
-            color: new THREE.Color().setHSL(0.6, 0.8, 0.7),
-            transparent: true,
-            opacity: 0 // Start fully transparent
-        });
-
-        particles = new THREE.Points(geometry, material);
-        scene.add(particles);
-
-        // Add initial position offset for smoother entrance
-        particles.position.z = -10;
-        particles.position.y = 5;       
-        
-        camera.position.z = 5; 
-        }
-
-        // Fade animation control
-        let fadeProgress = 0;
-        const fadeDuration = 10.5; // seconds
-
-        function animateFade(deltaTime) {
-            if(fadeProgress < 1) {
-                fadeProgress += deltaTime / fadeDuration;
-                particles.material.opacity = THREE.MathUtils.clamp(fadeProgress, 0, 0.8);
-            }
-        }
-
-        let clock = new THREE.Clock();
-
-    // Animation Loop
-    function animate() {
-        const deltaTime = clock.getDelta();
-
-        requestAnimationFrame(animate);
-        animateFade(deltaTime);
-        
-        particles.rotation.x += 0.001;
-        particles.rotation.y += 0.001;
-        
-        // Mouse interaction
-        particles.position.z = THREE.MathUtils.lerp(particles.position.z, 0, 0.02);
-        particles.position.y = THREE.MathUtils.lerp(particles.position.y, 0, 0.02);
-
-        camera.position.x += (mouse.x - camera.position.x) * 0.05;
-        camera.position.y += (-mouse.y - camera.position.y) * 0.05;
-        camera.lookAt(scene.position);
-    
-        renderer.render(scene, camera);
+    // MOBILE MENU TOGGLE (NO LAYOUT SHIFT; ARIA-CONTROLS/EXPANDED)
+    const menuBtn = document.getElementById('menuBtn');
+    const menu = document.getElementById('menuItems');
+    if(menuBtn && menu){
+      menuBtn.addEventListener('click', () => {
+        const open = menu.classList.toggle('open');
+        menuBtn.setAttribute('aria-expanded', String(open));
+      });
+      // CLOSE MENU IF A LINK IS CLICKED
+      menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        menu.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false');
+      }));
     }
 
+    // SMOOTH SCROLLING WITH REDUCED-MOTION RESPECT
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!prefersReduced){
+      document.querySelectorAll('a[href^="#"]').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          const id = a.getAttribute('href');
+          const el = id && document.querySelector(id);
+          if(el){
+            e.preventDefault();
+            el.scrollIntoView({behavior:'smooth', block:'start'});
+            history.replaceState(null, '', id);
+          }
+        });
+      });
+    }
 
-    // Initialize
-    function optimizeParticles() {
-        const aspectRatio = window.innerWidth / window.innerHeight;
-        const baseSize = 0.02 * Math.min(window.devicePixelRatio, 2);
-        
-        // Maintain relative size across devices
-        particles.material.size = baseSize * Math.min(1, 1.5 / aspectRatio);
-        
-        // Update camera projection
-        camera.aspect = aspectRatio;
-        camera.updateProjectionMatrix();
-        
-        // Update renderer
+    // REVEAL-ON-SCROLL (SKIP WHEN REDUCED MOTION)
+    if(!prefersReduced && 'IntersectionObserver' in window){
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            entry.target.classList.add('in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+      // KICK OFF ANYTHING ALREADY IN VIEW
+      requestAnimationFrame(()=>document.querySelectorAll('.reveal').forEach(el=>{
+        const r = el.getBoundingClientRect();
+        if(r.top < innerHeight * 0.9) el.classList.add('in');
+      }));
+    } else {
+      // IF REDUCED MOTION, ENSURE EVERYTHING IS VISIBILE
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    }
+
+    // CURRENT YEAR IN FOOTER
+    const y = document.getElementById('year'); if(y){ y.textContent = new Date().getFullYear(); }
+
+    // THREE.JS SOLAR SYSTEM BACKGROUND
+
+    (function() {
+
+        const canvas = document.getElementById('bg-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    }
 
-    window.addEventListener('resize', () => {
-        optimizeParticles();
-        
-        // Reset particle positions
-        particles.position.z = 5;
-        particles.position.y = 0;
-        
-        // Force redraw
-        renderer.render(scene, camera);
-    });
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+        camera.position.z = 30;
 
-    window.addEventListener('load', () => {
-        initThreeScene();
+        // LIGHTS
+        scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+        const pointLight = new THREE.PointLight(0xffffff, 1.2);
+        pointLight.position.set(20, 20, 20);
+        scene.add(pointLight);
+
+
+        // STARS
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = 1500;
+        const positions = new Float32Array(starCount * 3);
+
+        for(let i=0; i<starCount*3; i++){
+            positions[i] = (Math.random()-0.5) * 2000;
+        }
+
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 });
+        scene.add(new THREE.Points(starGeometry, starMaterial));
+
+        // SUN
+        const sun = new THREE.Mesh(
+            new THREE.SphereGeometry(5, 32, 32),
+            new THREE.MeshBasicMaterial({ color: 0xffcc00 })
+        );
+        scene.add(sun);
+
+        // PLANET + ORBIT
+        const planet = new THREE.Mesh(
+            new THREE.SphereGeometry(1, 32, 32),
+            new THREE.MeshStandardMaterial({ color: 0x3399ff })
+        );
+        scene.add(planet);
+
+        let angle = 0;
+        const orbitRadius = 15;
+
+        function animate(){
+            requestAnimationFrame(animate);
+                sun.rotation.y += 0.002;
+                angle += 0.003;
+                planet.position.set(
+                    orbitRadius * Math.cos(angle),
+                    0,
+                    orbitRadius * Math.sin(angle)
+            ); 
+            renderer.render(scene, camera);
+        }
         animate();
-        
-        // Add resize handler
+
+        // HANDLE RESIZE
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-    });
 
-        // Scroll Animations
-        const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('reveal');
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.timeline-card').forEach(card => {
-        observer.observe(card);
-    });
-
-    // Skills Grid Shuffle
-    const skillsGrid = document.querySelector('.skills-grid');
-    Array.from(skillsGrid.children).forEach(tag => {
-        tag.addEventListener('click', () => {
-            const skills = Array.from(skillsGrid.children);
-            skills.sort(() => Math.random() - 0.5);
-            skillsGrid.innerHTML = '';
-            skills.forEach(skill => skillsGrid.appendChild(skill));
-        });
-    });
-
-    // Parallax Effect
-    window.addEventListener('scroll', () => {
-        document.querySelectorAll('.timeline-card').forEach(card => {
-            const rect = card.getBoundingClientRect();
-            const translateZ = (window.innerHeight - rect.top) * 0.1;
-            card.style.transform = `translateZ(${translateZ}px)`;
-        });
-    });
-    
-    </script>
+    }) ();
+  </script>
 </body>
 </html>
